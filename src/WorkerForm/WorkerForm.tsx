@@ -1,5 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import Form from "../Form/Form";
+import FormSelect from "../Form/FormSelect";
+import FormText from "../Form/FormText";
+import FormToggle from "../Form/FormToggle";
 
 export interface Sector {
   id: string;
@@ -16,7 +20,7 @@ export interface Worker {
 export default function WorkerForm() {
   const [sectors, setSectors] = useState<Sector[]>([]);
 
-  const [name, setName] = useState<string>(""); // todo: won't need after validation
+  const [name, setName] = useState<string>("");
   const [sectorId, setSectorId] = useState<string>();
   const [terms, setTerms] = useState(false);
 
@@ -32,9 +36,7 @@ export default function WorkerForm() {
       .then((r) => r.data);
   };
 
-  const handleSubmit = (event: any) => {
-    event.preventDefault();
-
+  const handleSubmit = () => {
     postWorker({
       name: name,
       agreeToTerms: terms,
@@ -47,34 +49,25 @@ export default function WorkerForm() {
   }, []);
 
   return (
-    <div>
-      Please enter your name and pick the Sectors you are currently involved in.
-      <form onSubmit={handleSubmit}>
-        Name:
-        <textarea value={name} onChange={(v) => setName(v.target.value)} />
-        <br />
-        <br />
-        Sectors:
-        <select value={sectorId} onChange={(v) => setSectorId(v.target.value)}>
-          <option value="">None</option>
-          {sectors.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
-        <br />
-        <br />
-        <input
-          type="checkbox"
-          checked={terms}
-          onChange={() => setTerms(!terms)}
-        />
-        Agree to terms
-        <br />
-        <br />
-        <input type="submit" value="Submit" />
-      </form>
-    </div>
+    <Form
+      onSubmit={handleSubmit}
+      submitLabel="Submit"
+      title=" Please enter your name and pick the Sectors you are currently involved in."
+    >
+      <FormText label="Name" onChange={setName} />
+      <FormSelect
+        label="Sector"
+        onChange={setSectorId}
+        options={sectors.map((sector) => sector.id)}
+        displayFn={(id) =>
+          sectors.find((s) => s.id == id)?.name ?? "Invalid option"
+        }
+      />
+      <FormToggle
+        label="Agree to terms"
+        value={terms}
+        onChange={() => setTerms(!terms)}
+      />
+    </Form>
   );
 }
