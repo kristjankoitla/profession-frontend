@@ -1,5 +1,4 @@
-import "./App.css";
-import WorkerForm from "./WorkerForm";
+import WorkerForm from "../WorkerForm/WorkerForm";
 
 function App() {
   return (
