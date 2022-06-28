@@ -1,10 +1,10 @@
 import "./App.css";
-import SectorForm from "./SectorForm";
+import WorkerForm from "./WorkerForm";
 
 function App() {
   return (
     <div>
-      <SectorForm />
+      <WorkerForm />
     </div>
   );
 }
