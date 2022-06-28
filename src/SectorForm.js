@@ -5,11 +5,22 @@ export default function SectorForm() {
 
   const [name, setName] = useState("");
   const [sector, setSector] = useState("");
-  const [term, setTerms] = useState(false);
+  const [terms, setTerms] = useState(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(name, sector, term);
+    fetch("http://localhost:8080/workers", {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: name,
+        sectorId: sector,
+        agreeToTerms: terms
+      })
+    })
   };
 
   useEffect(() => {
@@ -20,23 +31,23 @@ export default function SectorForm() {
 
   return (
     <div>
-      Please enter your name and pick the Sectors you are currently involved in. 
+      Please enter your name and pick the Sectors you are currently involved in.
       <form onSubmit={handleSubmit}>
-        Name: 
+        Name:
         <textarea value={name} onChange={(v) => setName(v.target.value)} />
         <br />
         <br />
-        Sectors: 
+        Sectors:
         <select value={sector} onChange={(v) => setSector(v.target.value)}>
           <option value="">None</option>
-          {sectors.map(s => <option>{s.name}</option>)}
+          {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
         </select>
         <br />
         <br />
         <input
           type="checkbox"
-          checked={term}
-          onChange={() => setTerms(!term)}
+          checked={terms}
+          onChange={() => setTerms(!terms)}
         />
         Agree to terms
         <br />
