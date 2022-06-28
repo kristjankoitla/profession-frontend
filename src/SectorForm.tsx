@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
 
+
+export interface Sector {
+  id: string;
+  name: string;
+  parentSectorId: string;
+}
+
 export default function SectorForm() {
-  const [sectors, setSectors] = useState([]);
+  const [sectors, setSectors] = useState<Sector[]>([]);
 
   const [name, setName] = useState("");
   const [sector, setSector] = useState("");
   const [terms, setTerms] = useState(false);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: any) => {
     event.preventDefault();
     fetch("http://localhost:8080/workers", {
       method: 'POST',
