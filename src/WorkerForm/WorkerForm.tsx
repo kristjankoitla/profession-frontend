@@ -4,6 +4,7 @@ import Form from "../Form/Form";
 import FormSelect from "../Form/FormSelect";
 import FormText from "../Form/FormText";
 import FormToggle from "../Form/FormToggle";
+import { format } from "./Util";
 
 export interface Sector {
   id: string;
@@ -14,14 +15,14 @@ export interface Sector {
 export interface Worker {
   name: string;
   agreeToTerms: boolean;
-  sectorId?: string;
+  sectors?: Partial<Sector>[];
 }
 
 export default function WorkerForm() {
   const [sectors, setSectors] = useState<Sector[]>([]);
 
   const [name, setName] = useState<string>("");
-  const [sectorId, setSectorId] = useState<string>();
+  const [selectedSectors, setSelectedSectors] = useState<any[]>([]);
   const [terms, setTerms] = useState(false);
 
   const postWorker = (worker: Worker) => {
@@ -40,13 +41,15 @@ export default function WorkerForm() {
     postWorker({
       name: name,
       agreeToTerms: terms,
-      sectorId: sectorId,
+      sectors: selectedSectors.map((sector) => ({ id: sector.value })),
     });
   };
 
   useEffect(() => {
     getSectors().then((data) => setSectors(data));
   }, []);
+
+  const options = format(sectors);
 
   return (
     <Form
@@ -57,11 +60,9 @@ export default function WorkerForm() {
       <FormText label="Name" onChange={setName} />
       <FormSelect
         label="Sector"
-        onChange={setSectorId}
-        options={sectors.map((sector) => sector.id)}
-        displayFn={(id) =>
-          sectors.find((s) => s.id == id)?.name ?? "Invalid option"
-        }
+        onChange={setSelectedSectors}
+        options={options}
+        value={selectedSectors}
       />
       <FormToggle
         label="Agree to terms"

@@ -1,15 +1,13 @@
+import Select from "react-select";
+
 export interface FormSelectProps {
   label: string;
-  options: string[];
-  onChange: (value: string) => void;
-  displayFn?: (value: string) => string;
+  options: any;
+  value: any[];
+  onChange: (option: any) => void;
 }
 
 export default function FormSelect(props: FormSelectProps) {
-  const displayFn = props.displayFn
-    ? props.displayFn
-    : (value: string) => value;
-
   return (
     <div className="col-span-6 sm:col-span-3">
       <label
@@ -18,20 +16,26 @@ export default function FormSelect(props: FormSelectProps) {
       >
         {props.label}
       </label>
-      <select
-        id={props.label}
-        name={props.label}
-        onChange={(v) => props.onChange(v.target.value)}
-        className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-      >
-        {props.options.map((option) => {
-          return (
-            <option key={option} value={option}>
-              {displayFn(option)}
-            </option>
-          );
+      <Select
+        isMulti={true}
+        value={props.value}
+        options={props.options}
+        onChange={props.onChange}
+        formatOptionLabel={(option, { context }) => {
+          return context === "menu" ? option.dropdownLabel : option.inputLabel;
+        }}
+        hideSelectedOptions={false}
+        closeMenuOnSelect={false}
+        isSearchable={false}
+        theme={(theme) => ({
+          ...theme,
+          colors: {
+            ...theme.colors,
+            primary: "#4e46e5"
+          }
         })}
-      </select>
+        className="focus:ring-indigo-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+      />
     </div>
   );
 }
