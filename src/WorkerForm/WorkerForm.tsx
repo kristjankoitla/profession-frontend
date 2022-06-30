@@ -13,36 +13,67 @@ export interface Sector {
 }
 
 export interface Worker {
+  id?: string;
   name: string;
   agreeToTerms: boolean;
   sectors?: Partial<Sector>[];
 }
 
-export default function WorkerForm() {
+export interface WorkerFormProps {
+  defaultValue?: Worker;
+  onSave: (worker: Worker) => void;
+}
+
+export default function WorkerForm(props: WorkerFormProps) {
   const [sectors, setSectors] = useState<Sector[]>([]);
 
-  const [name, setName] = useState<string>("");
-  const [selectedSectors, setSelectedSectors] = useState<any[]>([]);
-  const [terms, setTerms] = useState(false);
+  const defaultSelectedSectors: string[] =
+    props.defaultValue?.sectors?.map((s) => s.id ?? "") ?? [];
+
+  const [name, setName] = useState<string>(props?.defaultValue?.name ?? "");
+  const [selectedSectors, setSelectedSectors] = useState<string[]>(
+    defaultSelectedSectors
+  );
+  const [terms, setTerms] = useState(
+    props?.defaultValue?.agreeToTerms ?? false
+  );
 
   const postWorker = (worker: Worker) => {
-    return axios
-      .post<string>("http://localhost:8080/workers", worker)
-      .then((d) => d.data);
+    return axios.post<string>("workers", worker).then((d) => d.data);
+  };
+
+  const putWorker = (id: string, worker: Worker) => {
+    return axios.put(`workers/${id}`, worker);
   };
 
   const getSectors = () => {
-    return axios
-      .get<Sector[]>("http://localhost:8080/sectors")
-      .then((r) => r.data);
+    return axios.get<Sector[]>("sectors").then((r) => r.data);
   };
 
   const handleSubmit = () => {
-    postWorker({
+    const worker = {
       name: name,
       agreeToTerms: terms,
-      sectors: selectedSectors.map((sector) => ({ id: sector.value })),
-    });
+      sectors: selectedSectors.map((sector) => ({ id: sector })),
+    };
+
+    if (props.defaultValue) {
+      putWorker(props.defaultValue.id!, worker).then(() => {
+        props.onSave({
+          ...worker,
+          id: props.defaultValue!.id,
+        });
+      });
+    }
+
+    if (!props.defaultValue) {
+      postWorker(worker).then((id) => {
+        props.onSave({
+          ...worker,
+          id: id,
+        });
+      });
+    }
   };
 
   useEffect(() => {
@@ -55,9 +86,9 @@ export default function WorkerForm() {
     <Form
       onSubmit={handleSubmit}
       submitLabel="Submit"
-      title=" Please enter your name and pick the Sectors you are currently involved in."
+      title="Please enter your name and pick the Sectors you are currently involved in."
     >
-      <FormText label="Name" onChange={setName} />
+      <FormText label="Name" onChange={setName} value={name} />
       <FormSelect
         label="Sector"
         onChange={setSelectedSectors}

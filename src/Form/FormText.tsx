@@ -1,5 +1,6 @@
 export interface FormTextProps {
   label: string;
+  value: string;
   onChange: (value: string) => void;
 }
 
@@ -14,6 +15,7 @@ export default function FormText(props: FormTextProps) {
       </label>
       <input
         type="text"
+        value={props.value}
         name={props.label}
         id={props.label}
         onChange={(v) => props.onChange(v.target.value)}
