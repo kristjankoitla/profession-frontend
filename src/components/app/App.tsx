@@ -1,5 +1,6 @@
 import { useCookies } from "react-cookie";
-import WorkerForm, { Worker } from "../WorkerForm/WorkerForm";
+import { Worker } from "../../api/Model";
+import WorkerForm from "../workerform/WorkerForm";
 
 function App() {
   const [cookies, setCookie] = useCookies<string, { worker: Worker }>([

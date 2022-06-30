@@ -1,7 +1,6 @@
-import { Sector } from "./WorkerForm";
+import { Sector } from "../../api/Model";
 
 export const format = (sectors: Sector[]) => {
-  // todo: this is called out too frequently
   const mapped = new Map<string | null, Sector[]>();
 
   sectors.forEach((sector) => {
@@ -14,7 +13,7 @@ export const format = (sectors: Sector[]) => {
       mapped.set(sector.id, []);
     }
   });
-  
+
   return recursiveFormat(mapped, null, 0);
 };
 

@@ -1,23 +1,11 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
-import Form from "../Form/Form";
-import FormSelect from "../Form/FormSelect";
-import FormText from "../Form/FormText";
-import FormToggle from "../Form/FormToggle";
+import { getSectors, postWorker, putWorker } from "../../api/Api";
+import { Worker } from "../../api/Model";
+import Form from "../form/Form";
+import FormSelect from "../form/FormSelect";
+import FormText from "../form/FormText";
+import FormToggle from "../form/FormToggle";
 import { format } from "./Util";
-
-export interface Sector {
-  id: string;
-  name: string;
-  parentSectorId?: string;
-}
-
-export interface Worker {
-  id?: string;
-  name: string;
-  agreeToTerms: boolean;
-  sectors?: Partial<Sector>[];
-}
 
 export interface WorkerFormProps {
   defaultValue?: Worker;
@@ -25,30 +13,13 @@ export interface WorkerFormProps {
 }
 
 export default function WorkerForm(props: WorkerFormProps) {
-  const [sectors, setSectors] = useState<Sector[]>([]);
+  const [options, setOptions] = useState<any[]>([]);
 
-  const defaultSelectedSectors: string[] =
-    props.defaultValue?.sectors?.map((s) => s.id ?? "") ?? [];
-
-  const [name, setName] = useState<string>(props?.defaultValue?.name ?? "");
-  const [selectedSectors, setSelectedSectors] = useState<string[]>(
-    defaultSelectedSectors
+  const [name, setName] = useState(props.defaultValue?.name ?? "");
+  const [selectedSectors, setSelectedSectors] = useState(
+    props.defaultValue?.sectors?.map((sector) => sector.id!) ?? []
   );
-  const [terms, setTerms] = useState(
-    props?.defaultValue?.agreeToTerms ?? false
-  );
-
-  const postWorker = (worker: Worker) => {
-    return axios.post<string>("workers", worker).then((d) => d.data);
-  };
-
-  const putWorker = (id: string, worker: Worker) => {
-    return axios.put(`workers/${id}`, worker);
-  };
-
-  const getSectors = () => {
-    return axios.get<Sector[]>("sectors").then((r) => r.data);
-  };
+  const [terms, setTerms] = useState(!!props.defaultValue?.agreeToTerms);
 
   const handleSubmit = () => {
     const worker = {
@@ -77,15 +48,13 @@ export default function WorkerForm(props: WorkerFormProps) {
   };
 
   useEffect(() => {
-    getSectors().then((data) => setSectors(data));
+    getSectors().then((data) => setOptions(format(data)));
   }, []);
-
-  const options = format(sectors);
 
   return (
     <Form
       onSubmit={handleSubmit}
-      submitLabel="Submit"
+      submitLabel={props.defaultValue ? "Save changes" : "Submit"}
       title="Please enter your name and pick the Sectors you are currently involved in."
     >
       <FormText label="Name" onChange={setName} value={name} />

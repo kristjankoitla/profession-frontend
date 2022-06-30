@@ -1,7 +1,7 @@
-import ReactDOM from "react-dom/client";
-import App from "./App/App";
 import axios from "axios";
-import { CookiesProvider } from 'react-cookie';
+import { CookiesProvider } from "react-cookie";
+import ReactDOM from "react-dom/client";
+import App from "./components/app/App";
 import "./index.css";
 
 axios.defaults.baseURL = "http://localhost:8080";
