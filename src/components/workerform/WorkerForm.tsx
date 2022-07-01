@@ -16,11 +16,18 @@ export default function WorkerForm(props: WorkerFormProps) {
   const [options, setOptions] = useState<any[]>([]);
 
   const [name, setName] = useState(props.defaultValue?.name ?? "");
+  const [nameValid, setNameValid] = useState(true);
+
   const [selectedSectors, setSelectedSectors] = useState(
     props.defaultValue?.sectors?.map((sector) => sector.id!) ?? []
   );
   const [terms, setTerms] = useState(!!props.defaultValue?.agreeToTerms);
   const [loading, setLoading] = useState(false);
+
+  const handleNameChange = (value: string) => {
+    setName(value);
+    setNameValid(!!value);
+  };
 
   const handleSubmit = () => {
     setLoading(true);
@@ -63,7 +70,13 @@ export default function WorkerForm(props: WorkerFormProps) {
       loading={loading}
       title="Please enter your name and pick the Sectors you are currently involved in."
     >
-      <FormText label="Name" onChange={setName} value={name} />
+      <FormText
+        label="Name"
+        onChange={handleNameChange}
+        value={name}
+        errorText="Field is required"
+        invalid={!nameValid}
+      />
       <FormSelect
         label="Sector"
         onChange={setSelectedSectors}

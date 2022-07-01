@@ -8,7 +8,7 @@ function App() {
   ]);
 
   return (
-    <div>
+    <div className="bg-purple-100 flex items-center justify-center h-screen">
       <WorkerForm
         defaultValue={cookies?.worker}
         onSave={(worker: Worker) => setCookie("worker", worker)}
