@@ -4,7 +4,7 @@ import ReactDOM from "react-dom/client";
 import App from "./components/app/App";
 import "./index.css";
 
-axios.defaults.baseURL = "http://localhost:8080";
+axios.defaults.baseURL = process.env.REACT_APP_SERVER_LOCATION;
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement

@@ -13,23 +13,35 @@ export interface WorkerFormProps {
 }
 
 export default function WorkerForm(props: WorkerFormProps) {
+  const [loading, setLoading] = useState(false);
   const [options, setOptions] = useState<any[]>([]);
 
+  const [nameError, setNameError] = useState(false);
   const [name, setName] = useState(props.defaultValue?.name ?? "");
-  const [nameValid, setNameValid] = useState(true);
-
   const [selectedSectors, setSelectedSectors] = useState(
     props.defaultValue?.sectors?.map((sector) => sector.id!) ?? []
   );
   const [terms, setTerms] = useState(!!props.defaultValue?.agreeToTerms);
-  const [loading, setLoading] = useState(false);
 
   const handleNameChange = (value: string) => {
     setName(value);
-    setNameValid(!!value);
+    setNameError(!value);
+  };
+
+  const submitOrEdit = (worker: Worker) => {
+    return props.defaultValue
+      ? putWorker(props.defaultValue.id!, worker).then(() => props.defaultValue?.id!)
+      : postWorker(worker);
   };
 
   const handleSubmit = () => {
+    const formValid = !!name;
+
+    if (!formValid) {
+      setNameError(true);
+      return;
+    }
+
     setLoading(true);
 
     const worker = {
@@ -38,25 +50,13 @@ export default function WorkerForm(props: WorkerFormProps) {
       sectors: selectedSectors.map((sector) => ({ id: sector })),
     };
 
-    if (props.defaultValue) {
-      putWorker(props.defaultValue.id!, worker).then(() => {
-        props.onSave({
-          ...worker,
-          id: props.defaultValue!.id,
-        });
-        setLoading(false);
-      });
-    }
-
-    if (!props.defaultValue) {
-      postWorker(worker).then((id) => {
-        props.onSave({
-          ...worker,
-          id: id,
-        });
-        setLoading(false);
-      });
-    }
+    submitOrEdit(worker).then((id) => {
+      props.onSave({
+        ...worker,
+        id: id
+      })
+      setLoading(false);
+    })
   };
 
   useEffect(() => {
@@ -75,7 +75,7 @@ export default function WorkerForm(props: WorkerFormProps) {
         onChange={handleNameChange}
         value={name}
         errorText="Field is required"
-        invalid={!nameValid}
+        invalid={nameError}
       />
       <FormSelect
         label="Sector"
