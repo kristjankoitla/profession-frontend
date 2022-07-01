@@ -20,8 +20,11 @@ export default function WorkerForm(props: WorkerFormProps) {
     props.defaultValue?.sectors?.map((sector) => sector.id!) ?? []
   );
   const [terms, setTerms] = useState(!!props.defaultValue?.agreeToTerms);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = () => {
+    setLoading(true);
+
     const worker = {
       name: name,
       agreeToTerms: terms,
@@ -34,6 +37,7 @@ export default function WorkerForm(props: WorkerFormProps) {
           ...worker,
           id: props.defaultValue!.id,
         });
+        setLoading(false);
       });
     }
 
@@ -43,6 +47,7 @@ export default function WorkerForm(props: WorkerFormProps) {
           ...worker,
           id: id,
         });
+        setLoading(false);
       });
     }
   };
@@ -55,6 +60,7 @@ export default function WorkerForm(props: WorkerFormProps) {
     <Form
       onSubmit={handleSubmit}
       submitLabel={props.defaultValue ? "Save changes" : "Submit"}
+      loading={loading}
       title="Please enter your name and pick the Sectors you are currently involved in."
     >
       <FormText label="Name" onChange={setName} value={name} />

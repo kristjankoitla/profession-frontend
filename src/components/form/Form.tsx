@@ -1,7 +1,10 @@
+import Button from "./Button";
+
 export interface FormProps {
   title: string;
   children: React.ReactNode;
   submitLabel: string;
+  loading: boolean;
   onSubmit: () => void;
 }
 
@@ -28,12 +31,11 @@ export default function Form(props: FormProps) {
                   {props.children}
                 </div>
                 <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
-                  <button
+                  <Button
+                    label={props.submitLabel}
                     type="submit"
-                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    {props.submitLabel}
-                  </button>
+                    loading={props.loading}
+                  />
                 </div>
               </div>
             </form>
