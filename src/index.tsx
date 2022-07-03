@@ -1,6 +1,8 @@
 import axios from "axios";
 import { CookiesProvider } from "react-cookie";
 import ReactDOM from "react-dom/client";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import App from "./components/app/App";
 import "./index.css";
 
@@ -12,5 +14,6 @@ const root = ReactDOM.createRoot(
 root.render(
   <CookiesProvider>
     <App />
+    <ToastContainer />
   </CookiesProvider>
 );

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
+import { toast } from 'react-toastify';
 import { getSectors, postWorker, putWorker } from "../../api/Api";
 import { Worker } from "../../api/Model";
 import Form from "../form/Form";
@@ -20,12 +21,7 @@ export interface WorkerFormProps {
 }
 
 export default function WorkerForm(props: WorkerFormProps) {
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm({
+  const {register, handleSubmit, control, formState: { errors }} = useForm({
     defaultValues: {
       name: props.defaultValue?.name,
       terms: props.defaultValue?.agreeToTerms,
@@ -38,9 +34,7 @@ export default function WorkerForm(props: WorkerFormProps) {
 
   const submitOrEdit = (worker: Worker) => {
     return props.defaultValue
-      ? putWorker(props.defaultValue.id!, worker).then(
-          () => props.defaultValue?.id!
-        )
+      ? putWorker(props.defaultValue.id!, worker).then(() => props.defaultValue?.id!)
       : postWorker(worker);
   };
 
@@ -59,9 +53,19 @@ export default function WorkerForm(props: WorkerFormProps) {
         id: id,
       });
     })
-    .then(() => setLoading(false))
-    .catch(() => setLoading(false));
+    .then(handleSuccess)
+    .catch(handleFail);
   };
+
+  const handleSuccess = () => {
+    toast.success("Successfully " + (props.defaultValue ? "updated" : "submitted"), {autoClose: false});
+    setLoading(false);
+  }
+
+  const handleFail = () => {
+    toast.error("Failed to " + (props.defaultValue ? "update" : "submit"), {autoClose: false});
+    setLoading(false);
+  }
 
   useEffect(() => {
     getSectors().then((data) => setOptions(format(data)));
@@ -82,12 +86,7 @@ export default function WorkerForm(props: WorkerFormProps) {
         invalid={!!errors.name}
         errorText="Field is required"
       />
-      <FormSelect
-        label="Sectors"
-        name="sectors"
-        control={control}
-        options={options}
-      />
+      <FormSelect label="Sectors" name="sectors" control={control} options={options}/>
       <FormToggle label="Agree to terms" name="terms" register={register} />
     </Form>
   );
