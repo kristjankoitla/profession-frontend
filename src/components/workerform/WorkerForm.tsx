@@ -1,11 +1,18 @@
 import { useEffect, useState } from "react";
+import { FieldValues, useForm } from "react-hook-form";
 import { getSectors, postWorker, putWorker } from "../../api/Api";
 import { Worker } from "../../api/Model";
 import Form from "../form/Form";
-import FormSelect from "../form/FormSelect";
+import FormSelect, { Option } from "../form/FormSelect";
 import FormText from "../form/FormText";
 import FormToggle from "../form/FormToggle";
 import { format } from "./Util";
+
+export interface FormFields {
+  name: string;
+  terms: boolean;
+  sectors: string[];
+}
 
 export interface WorkerFormProps {
   defaultValue?: Worker;
@@ -13,50 +20,47 @@ export interface WorkerFormProps {
 }
 
 export default function WorkerForm(props: WorkerFormProps) {
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name: props.defaultValue?.name,
+      terms: props.defaultValue?.agreeToTerms,
+      sectors: props.defaultValue?.sectors?.map((sector) => sector.id),
+    } as any,
+  });
+
+  const [options, setOptions] = useState<Option[]>([]);
   const [loading, setLoading] = useState(false);
-  const [options, setOptions] = useState<any[]>([]);
-
-  const [nameError, setNameError] = useState(false);
-  const [name, setName] = useState(props.defaultValue?.name ?? "");
-  const [selectedSectors, setSelectedSectors] = useState(
-    props.defaultValue?.sectors?.map((sector) => sector.id!) ?? []
-  );
-  const [terms, setTerms] = useState(!!props.defaultValue?.agreeToTerms);
-
-  const handleNameChange = (value: string) => {
-    setName(value);
-    setNameError(!value);
-  };
 
   const submitOrEdit = (worker: Worker) => {
     return props.defaultValue
-      ? putWorker(props.defaultValue.id!, worker).then(() => props.defaultValue?.id!)
+      ? putWorker(props.defaultValue.id!, worker).then(
+          () => props.defaultValue?.id!
+        )
       : postWorker(worker);
   };
 
-  const handleSubmit = () => {
-    const formValid = !!name;
-
-    if (!formValid) {
-      setNameError(true);
-      return;
-    }
-
+  const onSubmit = (data: FieldValues) => {
     setLoading(true);
-
+    
     const worker = {
-      name: name,
-      agreeToTerms: terms,
-      sectors: selectedSectors.map((sector) => ({ id: sector })),
+      name: data.name,
+      agreeToTerms: data.terms,
+      sectors: data.sectors.map((sector: string) => ({ id: sector })),
     };
 
     submitOrEdit(worker).then((id) => {
       props.onSave({
         ...worker,
-        id: id
-      })
-      setLoading(false);
+        id: id,
+      });
     })
+    .then(() => setLoading(false))
+    .catch(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -65,29 +69,26 @@ export default function WorkerForm(props: WorkerFormProps) {
 
   return (
     <Form
-      onSubmit={handleSubmit}
-      submitLabel={props.defaultValue ? "Save changes" : "Submit"}
-      loading={loading}
       title="Please enter your name and pick the Sectors you are currently involved in."
+      submitLabel={props.defaultValue ? "Save changes" : "Submit"}
+      onSubmit={handleSubmit(onSubmit)}
+      loading={loading}
     >
       <FormText
         label="Name"
-        onChange={handleNameChange}
-        value={name}
+        name="name"
+        register={register}
+        registerOptions={{ required: true }}
+        invalid={!!errors.name}
         errorText="Field is required"
-        invalid={nameError}
       />
       <FormSelect
-        label="Sector"
-        onChange={setSelectedSectors}
+        label="Sectors"
+        name="sectors"
+        control={control}
         options={options}
-        value={selectedSectors}
       />
-      <FormToggle
-        label="Agree to terms"
-        value={terms}
-        onChange={() => setTerms(!terms)}
-      />
+      <FormToggle label="Agree to terms" name="terms" register={register} />
     </Form>
   );
 }

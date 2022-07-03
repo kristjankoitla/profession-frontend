@@ -1,4 +1,6 @@
-import Select, { MultiValue } from "react-select";
+import { Control, Controller, FieldValues } from "react-hook-form";
+
+import Select from "react-select";
 import { FormatOptionLabelContext } from "react-select/dist/declarations/src/Select";
 
 export interface Option {
@@ -9,53 +11,57 @@ export interface Option {
 
 export interface FormSelectProps {
   label: string;
+  name: string;
+  control: Control<FieldValues, object>;
   options: Option[];
-  value: string[];
-  onChange: (option: string[]) => void;
 }
 
 export default function FormSelect(props: FormSelectProps) {
-  const mappedValues = props.value
-    .map((value) => props.options.find((option) => option.value === value))
-    .filter((option) => !!option) as unknown as Option[];
-
   const displayFn = (value: Option, context: FormatOptionLabelContext) => {
     const option = props.options.find((option) => option.value === value.value);
     return context === "menu" ? option?.dropdownLabel : option?.inputLabel;
   };
 
-  const onChange = (options: MultiValue<Option>) => {
-    const values = options.map((option) => option.value);
-    props.onChange(values);
-  };
-
   return (
-    <div className="col-span-6 sm:col-span-3">
-      <label
-        htmlFor={props.label}
-        className="block text-sm font-medium text-gray-700"
-      >
+    <div className="col-span-6 sm:col-span-4">
+      <label className="block text-sm font-medium text-gray-700">
         {props.label}
       </label>
-      <Select
-        isMulti={true}
-        isSearchable={false}
-        closeMenuOnSelect={false}
-        hideSelectedOptions={false}
-        value={mappedValues}
-        options={props.options}
-        onChange={onChange}
-        formatOptionLabel={(value: any, { context }: any) =>
-          displayFn(value, context)
-        }
-        className="sm:text-sm"
-        theme={(theme) => ({
-          ...theme,
-          colors: {
-            ...theme.colors,
-            primary: "#4e46e5",
-          },
-        })}
+      <Controller
+        name={props.name}
+        control={props.control}
+        render={({ field: { value, onChange } }) => {
+          return (
+            <Select
+              isMulti={true}
+              isSearchable={false}
+              closeMenuOnSelect={false}
+              hideSelectedOptions={false}
+              menuPosition="fixed"
+  
+              options={props.options}
+              value={props.options.filter((option: any) =>
+                value?.includes(option.value)
+              )}
+
+              onChange={(options) =>
+                onChange(options?.map((option) => option.value))
+              }
+              formatOptionLabel={(value: any, { context }: any) =>
+                displayFn(value, context)
+              }
+
+              className="sm:text-sm"
+              theme={(theme) => ({
+                ...theme,
+                colors: {
+                  ...theme.colors,
+                  primary: "#4e46e5",
+                },
+              })}
+            />
+          );
+        }}
       />
     </div>
   );

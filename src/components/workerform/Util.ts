@@ -1,4 +1,5 @@
 import { Sector } from "../../api/Model";
+import { Option } from "../form/FormSelect";
 
 export const format = (sectors: Sector[]) => {
   const mapped = new Map<string | null, Sector[]>();
@@ -22,7 +23,7 @@ const recursiveFormat = (
   key: string | null,
   level: number
 ) => {
-  const result: any[] = [];
+  const result: Option[] = [];
   mah.get(key)?.forEach((sector) => {
     result.push({
       value: sector.id,
