@@ -1,5 +1,5 @@
 # Worker registration app
-This is the frontend side for the Worker registration app.
+This is the frontend side of the Worker registration app.
 
 # Getting Started
 
@@ -23,4 +23,4 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 ## Environment variables
 `REACT_APP_SERVER_LOCATION` is a necessary environment variable that specifies the location of the backend application.  
 
-The value should probably be `http://localhost:8080 `
+The value should probably be `http://localhost:8080`

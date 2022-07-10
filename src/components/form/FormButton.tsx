@@ -1,11 +1,11 @@
-export interface ButtonProps {
+export interface FormButtonProps {
   label: string;
   loading?: boolean;
   onClick?: () => void;
   type?: "button" | "submit" | "reset";
 }
 
-export default function Button(props: ButtonProps) {
+export default function FormButton(props: FormButtonProps) {
   const spinner = (
     <svg
       role="status"

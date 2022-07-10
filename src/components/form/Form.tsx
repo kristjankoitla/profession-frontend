@@ -1,4 +1,4 @@
-import Button from "./Button";
+import FormButton from "./FormButton";
 
 export interface FormProps {
   title: string;
@@ -31,7 +31,7 @@ export default function Form(props: FormProps) {
                   {props.children}
                 </div>
                 <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
-                  <Button
+                  <FormButton
                     label={props.submitLabel}
                     type="submit"
                     loading={props.loading}

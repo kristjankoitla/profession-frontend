@@ -3,8 +3,8 @@ import { CookiesProvider } from "react-cookie";
 import ReactDOM from "react-dom/client";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import App from "./components/app/App";
 import "./index.css";
+import FormView from "./views/app/FormView";
 
 axios.defaults.baseURL = process.env.REACT_APP_SERVER_LOCATION;
 
@@ -13,7 +13,7 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <CookiesProvider>
-    <App />
+    <FormView />
     <ToastContainer />
   </CookiesProvider>
 );

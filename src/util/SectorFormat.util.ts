@@ -1,7 +1,7 @@
-import { Sector } from "../../api/Model";
-import { Option } from "../form/FormSelect";
+import { Sector } from "../api/Model";
+import { Option } from "../components/form/FormSelect";
 
-export const format = (sectors: Sector[]) => {
+export const formatSectorsToOptions = (sectors: Sector[]) => {
   const mapped = new Map<string | null, Sector[]>();
 
   sectors.forEach((sector) => {

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { toast } from 'react-toastify';
-import { getSectors, postWorker, putWorker } from "../../api/Api";
-import { Worker } from "../../api/Model";
-import Form from "../form/Form";
-import FormSelect, { Option } from "../form/FormSelect";
-import FormText from "../form/FormText";
-import FormToggle from "../form/FormToggle";
-import { format } from "./Util";
+import { getSectors, postWorker, putWorker } from "../api/Api";
+import { Worker } from "../api/Model";
+import { formatSectorsToOptions } from "../util/SectorFormat.util";
+import Form from "./form/Form";
+import FormSelect, { Option } from "./form/FormSelect";
+import FormText from "./form/FormText";
+import FormToggle from "./form/FormToggle";
 
 export interface FormFields {
   name: string;
@@ -68,7 +68,7 @@ export default function WorkerForm(props: WorkerFormProps) {
   }
 
   useEffect(() => {
-    getSectors().then((data) => setOptions(format(data)));
+    getSectors().then((data) => setOptions(formatSectorsToOptions(data)));
   }, []);
 
   return (
